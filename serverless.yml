@@ -1,0 +1,63 @@
+service: orders-pipeline
+StreamSpecification:
+StreamViewType: NEW_IMAGE
+
+
+OrdersDeadLetterQueue:
+Type: AWS::SQS::Queue
+Properties:
+QueueName: orders-dead-letter-queue
+
+
+OrdersQueue:
+Type: AWS::SQS::Queue
+Properties:
+QueueName: orders-queue
+RedrivePolicy:
+deadLetterTargetArn: { "Fn::GetAtt": ["OrdersDeadLetterQueue","Arn"] }
+maxReceiveCount: 5
+
+
+OrdersNotifyTopic:
+Type: AWS::SNS::Topic
+Properties:
+TopicName: orders-notify-topic
+
+
+functions:
+orderProcessor:
+handler: src/order_processor.process_order
+memorySize: 512
+timeout: 30
+tracing: Active
+events:
+- sqs:
+arn: { "Fn::GetAtt": ["OrdersQueue","Arn"] }
+batchSize: 5
+maximumRetryAttempts: 2
+environment:
+DYNAMODB_TABLE: ${self:provider.environment.ORDERS_TABLE}
+notifier:
+handler: src/notifier.send_notification
+memorySize: 256
+timeout: 10
+events:
+- stream:
+type: dynamodb
+arn: { "Fn::GetAtt": ["OrdersTable","StreamArn"] }
+environment:
+SNS_TOPIC_ARN: { Ref: OrdersNotifyTopic }
+
+
+plugins:
+- serverless-python-requirements
+
+
+package:
+exclude:
+- tests/**
+
+
+custom:
+pythonRequirements:
+dockerizePip: true

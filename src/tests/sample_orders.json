@@ -1,0 +1,14 @@
+[
+{
+"orderId": "ord_test1",
+"items": [{"sku": "sku101", "qty": 1}],
+"totalAmount": 49.99,
+"customerId": "cust_testA"
+},
+{
+"orderId": "ord_test2",
+"items": [{"sku": "sku202", "qty": 3}],
+"totalAmount": 150.0,
+"customerId": "cust_testB"
+}
+]
