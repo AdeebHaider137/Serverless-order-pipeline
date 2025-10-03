@@ -20,8 +20,10 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Serverless Framework
-        run: npm install -g serverless
+      - name: Install serverless
+        run: |
+          npm install -g serverless@3
+
 
       - name: Install Python requirements
         run: pip install -r requirements.txt || true
