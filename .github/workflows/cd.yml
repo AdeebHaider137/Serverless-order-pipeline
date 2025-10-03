@@ -23,6 +23,7 @@ jobs:
       - name: Install serverless
         run: |
           npm install -g serverless@3
+          npm install serverless-python-requirements
 
 
       - name: Install Python requirements
