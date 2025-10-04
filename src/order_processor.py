@@ -18,13 +18,15 @@ def process_order(event, context):
             order = json.loads(body)
             order_id = order.get('orderId') or f"ord_{int(time.time()*1000)}"
             now = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+            raw_total = order.get('totalAmount', 0)
+            total_cents = int(round(float(raw_total) * 100))  # convert dollars to cents as integer
 
             item = {
                 'orderId': order_id,
                 'createdAt': now,
                 'status': 'PENDING',
                 'items': order.get('items', []),
-                'totalAmount': order.get('totalAmount', 0),
+                'totalAmount': total_cents,
                 'customerId': order.get('customerId')
             }
 
