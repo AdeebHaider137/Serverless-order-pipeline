@@ -8,6 +8,22 @@ provider:
     lambda: true
   environment:
     ORDERS_TABLE: OrdersTable
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+            - dynamodb:DescribeTable
+          Resource:
+            - Fn::GetAtt: [OrdersTable, Arn]
+        - Effect: Allow
+          Action:
+            - sns:Publish
+          Resource:
+            - Ref: OrdersNotifyTopic
 
 functions:
   orderProcessor:
@@ -28,26 +44,35 @@ functions:
     handler: src/notifier.send_notification
     memorySize: 256
     timeout: 10
+    tracing: Active
     events:
       - stream:
           type: dynamodb
           arn:
             Fn::GetAtt: [OrdersTable, StreamArn]
+          #Trigger only on INSERT events — no updates or deletes
+          filterPatterns:
+            - eventName: ["INSERT"]
     environment:
       SNS_TOPIC_ARN:
         Ref: OrdersNotifyTopic
 
 resources:
   Resources:
+    # Dead-letter queue for safety
     OrdersDeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
         QueueName: orders-dead-letter-queue
 
+    # Use FIFO + deduplication to prevent reprocessing identical messages
     OrdersQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: orders-queue
+        QueueName: orders-queue.fifo
+        FifoQueue: true
+        ContentBasedDeduplication: true
+        VisibilityTimeout: 60 # Must be > Lambda timeout
         RedrivePolicy:
           deadLetterTargetArn:
             Fn::GetAtt: [OrdersDeadLetterQueue, Arn]
