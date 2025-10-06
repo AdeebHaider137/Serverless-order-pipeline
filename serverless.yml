@@ -36,7 +36,6 @@ functions:
           arn:
             Fn::GetAtt: [OrdersQueue, Arn]
           batchSize: 5
-          maximumRetryAttempts: 2
     environment:
       DYNAMODB_TABLE: ${self:provider.environment.ORDERS_TABLE}
 
@@ -50,7 +49,7 @@ functions:
           type: dynamodb
           arn:
             Fn::GetAtt: [OrdersTable, StreamArn]
-          #Trigger only on INSERT events — no updates or deletes
+          # Trigger only on INSERT events — no updates or deletes
           filterPatterns:
             - eventName: ["INSERT"]
     environment:
@@ -63,7 +62,9 @@ resources:
     OrdersDeadLetterQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: orders-dead-letter-queue
+        QueueName: orders-dead-letter-queue.fifo
+        FifoQueue: true
+        ContentBasedDeduplication: true
 
     # Use FIFO + deduplication to prevent reprocessing identical messages
     OrdersQueue:
@@ -72,7 +73,7 @@ resources:
         QueueName: orders-queue.fifo
         FifoQueue: true
         ContentBasedDeduplication: true
-        VisibilityTimeout: 60 # Must be > Lambda timeout
+        VisibilityTimeout: 60
         RedrivePolicy:
           deadLetterTargetArn:
             Fn::GetAtt: [OrdersDeadLetterQueue, Arn]
