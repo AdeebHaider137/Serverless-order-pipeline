@@ -66,11 +66,11 @@ resources:
         FifoQueue: true
         ContentBasedDeduplication: true
 
-    # Use FIFO + deduplication to prevent reprocessing identical messages
+    # standard queue for a order pipeline project
     OrdersQueue:
       Type: AWS::SQS::Queue
       Properties:
-        QueueName: orders-queue.fifo
+        QueueName: orders-queue
         FifoQueue: true
         ContentBasedDeduplication: true
         VisibilityTimeout: 60
