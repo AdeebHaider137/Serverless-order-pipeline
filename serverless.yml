@@ -23,7 +23,7 @@ provider:
           Action:
             - sns:Publish
           Resource:
-            - Ref: OrdersNotifyTopic
+            - Ref: SalesOrder
 
 functions:
   orderProcessor:
@@ -53,7 +53,7 @@ functions:
             - eventName: ["INSERT"]
     environment:
       SNS_TOPIC_ARN:
-        Ref: OrdersNotifyTopic
+        Ref: SalesOrder
 
 resources:
   Resources:
@@ -76,7 +76,7 @@ resources:
     OrdersNotifyTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: orders-notify-topic
+        TopicName: SalesOrder
 
     OrdersTable:
       Type: AWS::DynamoDB::Table
