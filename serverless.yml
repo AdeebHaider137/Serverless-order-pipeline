@@ -73,11 +73,6 @@ resources:
             Fn::GetAtt: [OrdersDeadLetterQueue, Arn]
           maxReceiveCount: 5
 
-    SalesOrder:
-      Type: AWS::SNS::Topic
-      Properties:
-        TopicName: SalesOrder
-
     OrdersTable:
       Type: AWS::DynamoDB::Table
       Properties:
