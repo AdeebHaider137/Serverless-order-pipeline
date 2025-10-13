@@ -73,7 +73,7 @@ resources:
             Fn::GetAtt: [OrdersDeadLetterQueue, Arn]
           maxReceiveCount: 5
 
-    OrdersNotifyTopic:
+    SalesOrder:
       Type: AWS::SNS::Topic
       Properties:
         TopicName: SalesOrder
