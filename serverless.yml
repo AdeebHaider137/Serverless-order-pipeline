@@ -22,8 +22,8 @@ provider:
         - Effect: Allow
           Action:
             - sns:Publish
-          Resource:
-            - Ref: SalesOrder
+          Resource: arn:aws:sns:ap-south-1:439605209759:SalesOrder
+          
 
 functions:
   orderProcessor:
