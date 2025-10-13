@@ -23,7 +23,6 @@ provider:
           Action:
             - sns:Publish
           Resource: arn:aws:sns:ap-south-1:439605209759:SalesOrder
-          
 
 functions:
   orderProcessor:
@@ -52,8 +51,7 @@ functions:
           filterPatterns:
             - eventName: ["INSERT"]
     environment:
-      SNS_TOPIC_ARN:
-        Ref: SalesOrder
+      SNS_TOPIC_ARN: arn:aws:sns:ap-south-1:439605209759:SalesOrder
 
 resources:
   Resources:
