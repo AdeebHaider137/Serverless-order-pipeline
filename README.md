@@ -21,6 +21,9 @@ Tech Stack
 * **Amazon SNS** – Real-time alerts & notifications
 * **Serverless Framework** – Infrastructure as Code (IaC)
 * **GitHub Actions** – CI/CD for automated deployments
+* **AWS IAM** - For controlling actions and policies of IAM user and IAM roles
+* **AWS CloudWatch** – Used for debugging errors encouterd
+* **AWS X-Ray** - For analyzing and debugging the pipeline 
 
 ---
 
