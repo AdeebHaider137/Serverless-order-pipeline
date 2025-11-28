@@ -3,13 +3,12 @@ import boto3
 import os
 
 
-# Load AWS resources dynamically from env or Serverless outputs
 sqs = boto3.client("sqs")
 dynamodb = boto3.resource("dynamodb")
 sns = boto3.client("sns")
 
 
-QUEUE_URL = os.environ.get("ORDERS_QUEUE_URL") # Exported after deploy
+QUEUE_URL = os.environ.get("ORDERS_QUEUE_URL")
 TABLE_NAME = os.environ.get("ORDERS_TABLE")
 
 
@@ -35,9 +34,9 @@ def verify_orders_in_dynamodb(orders):
     for order in orders:
         resp = table.get_item(Key={"orderId": order["orderId"]})
         if "Item" in resp:
-            print("✅ Order found in DynamoDB:", resp["Item"])
+            print("Order found in DynamoDB:", resp["Item"])
         else:
-            print("❌ Order not found:", order["orderId"])
+            print("Order not found:", order["orderId"])
 
 
 
